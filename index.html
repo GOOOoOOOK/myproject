@@ -241,16 +241,15 @@
         </div>
     </footer>
 
-
     <div id="product-modal" class="modal">
         <div class="modal-content product-modal-content">
             <span class="close">&times;</span>
             <div class="product-modal-container">
                 <div class="product-modal-img">
-                    <img id="modal-product-img" src="" alt="">
+                    <img id="modal-product-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Изображение мёда" width="320" height="212">
                 </div>
                 <div class="product-modal-info">
-                    <h2 id="modal-product-name"></h2>
+                    <h2 id="modal-product-name" class="visually-hidden">Описание мёда</h2>
                     <div id="modal-product-description"></div>
                     <div class="price" id="modal-product-price"></div>
                     <button class="btn add-to-cart">В корзину</button>
@@ -258,7 +257,6 @@
             </div>
         </div>
     </div>
-
 
     <div id="cart-modal" class="modal">
         <div class="modal-content">
@@ -272,7 +270,6 @@
             <button id="checkout-btn" class="btn">Оформить заказ</button>
         </div>
     </div>
-
 
     <div id="order-form-modal" class="modal">
         <div class="modal-content">
@@ -299,7 +296,6 @@
             </form>
         </div>
     </div>
-
 
     <div class="cart-icon" id="cart-icon">
         <i class="fas fa-shopping-cart"></i>
@@ -349,7 +345,7 @@
                 if (e.target === orderFormModal) orderFormModal.style.display = 'none';
             });
 
-            // Обработчики для кнопок "В корзину" на карточках товаров
+
             document.querySelectorAll('.product-card .add-to-cart').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -385,8 +381,14 @@
                         const description = this.querySelector('.full-description').dataset.fullDescription;
                         const price = this.querySelector('.price').textContent;
                         
-                        document.getElementById('modal-product-img').src = img;
-                        document.getElementById('modal-product-name').textContent = name;
+                        const modalImg = document.getElementById('modal-product-img');
+                        modalImg.src = img;
+                        modalImg.alt = name;
+                        
+                        const modalName = document.getElementById('modal-product-name');
+                        modalName.textContent = name;
+                        modalName.classList.remove('visually-hidden');
+                        
                         document.getElementById('modal-product-description').innerHTML = description;
                         document.getElementById('modal-product-price').textContent = price;
                         
