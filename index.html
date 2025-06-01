@@ -40,7 +40,7 @@
             <div class="product-grid">
                 <div class="product-card">
                     <div class="product-img">
-                        <img alt="" loading="lazy" width="320" height="212" decoding="async" data-nimg="1" class="CustomImage_mainImage__YFy2f" src="https://yastatic.net/s3/eats-media/801e0205-3614-419e-9ce1-61dab9a5d2dc.jpg" style="color: transparent;">
+                        <img alt="Цветочный мёд" loading="lazy" width="320" height="212" src="https://yastatic.net/s3/eats-media/801e0205-3614-419e-9ce1-61dab9a5d2dc.jpg">
                     </div>
                     <div class="product-info">
                         <h3>Цветочный мёд</h3>
@@ -52,7 +52,7 @@
                 
                 <div class="product-card">
                     <div class="product-img">
-                        <img alt="" loading="lazy" width="320" height="212" decoding="async" data-nimg="1" class="CustomImage_mainImage__YFy2f" src="https://yastatic.net/s3/eats-media/fe54fa3b-1ee7-4905-b53f-af58514b2aab.jpg" style="color: transparent;">
+                        <img alt="Гречишный мёд" loading="lazy" width="320" height="212" src="https://yastatic.net/s3/eats-media/fe54fa3b-1ee7-4905-b53f-af58514b2aab.jpg">
                     </div>
                     <div class="product-info">
                         <h3>Гречишный мёд</h3>
@@ -76,7 +76,7 @@
                 
                 <div class="product-card">
                     <div class="product-img">
-                        <img src="img/соты.webp" alt="Липовый мёд" width="320" height="212">
+                        <img src="img/соты.webp" alt="Мёд в сотах" width="320" height="212">
                     </div>
                     <div class="product-info">
                         <h3>Мёд в сотах</h3>
@@ -136,8 +136,26 @@
             </div>
         </div>
     </footer>
-    
 
+    <!-- Модальное окно товара -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content product-modal-content">
+            <span class="close">&times;</span>
+            <div class="product-modal-container">
+                <div class="product-modal-img">
+                    <img id="modal-product-img" src="" alt="">
+                </div>
+                <div class="product-modal-info">
+                    <h2 id="modal-product-name"></h2>
+                    <p id="modal-product-description"></p>
+                    <div class="price" id="modal-product-price"></div>
+                    <button class="btn add-to-cart">В корзину</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно корзины -->
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -151,7 +169,7 @@
         </div>
     </div>
 
-
+    <!-- Модальное окно оформления заказа -->
     <div id="order-form-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -178,7 +196,7 @@
         </div>
     </div>
 
-
+    <!-- Иконка корзины -->
     <div class="cart-icon" id="cart-icon">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count" id="cart-count">0</span>
@@ -188,6 +206,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];            
             const cartModal = document.getElementById('cart-modal');
+            const productModal = document.getElementById('product-modal');
             const orderFormModal = document.getElementById('order-form-modal');
             const cartItemsContainer = document.getElementById('cart-items');
             const cartTotalPrice = document.getElementById('cart-total-price');
@@ -215,33 +234,81 @@
             document.querySelectorAll('.close').forEach(closeBtn => {
                 closeBtn.addEventListener('click', () => {
                     cartModal.style.display = 'none';
+                    productModal.style.display = 'none';
                     orderFormModal.style.display = 'none';
                 });
             });
             
             window.addEventListener('click', (e) => {
                 if (e.target === cartModal) cartModal.style.display = 'none';
+                if (e.target === productModal) productModal.style.display = 'none';
                 if (e.target === orderFormModal) orderFormModal.style.display = 'none';
             });
 
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', function() {
+            // Обработчики для кнопок "В корзину" на карточках товаров
+            document.querySelectorAll('.product-card .add-to-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     const productCard = this.closest('.product-card');
-                    const productName = productCard.querySelector('h3').textContent;
-                    const productPrice = parseFloat(productCard.querySelector('.price').textContent);
-                    const productImg = productCard.querySelector('img').src;
-                    
-                    addToCart({
-                        name: productName,
-                        price: productPrice,
-                        img: productImg,
-                        quantity: 1
-                    });
+                    addProductToCart(productCard);
                 });
             });
             
+            // Обработчик для кнопки "В корзину" в модальном окне товара
+            productModal.querySelector('.add-to-cart').addEventListener('click', function() {
+                const productName = document.getElementById('modal-product-name').textContent;
+                const productPrice = parseFloat(document.getElementById('modal-product-price').textContent);
+                const productImg = document.getElementById('modal-product-img').src;
+                const productDescription = document.getElementById('modal-product-description').textContent;
+                
+                addToCart({
+                    name: productName,
+                    price: productPrice,
+                    img: productImg,
+                    description: productDescription,
+                    quantity: 1
+                });
+                
+                productModal.style.display = 'none';
+            });
+            
+            // Обработчики кликов на карточки товаров для открытия модального окна
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('add-to-cart') && 
+                        !e.target.closest('.add-to-cart')) {
+                        
+                        const img = this.querySelector('img').src;
+                        const name = this.querySelector('h3').textContent;
+                        const description = this.querySelector('p').textContent;
+                        const price = this.querySelector('.price').textContent;
+                        
+                        document.getElementById('modal-product-img').src = img;
+                        document.getElementById('modal-product-name').textContent = name;
+                        document.getElementById('modal-product-description').textContent = description;
+                        document.getElementById('modal-product-price').textContent = price;
+                        
+                        productModal.style.display = 'block';
+                    }
+                });
+            });
+            
+            function addProductToCart(productCard) {
+                const productName = productCard.querySelector('h3').textContent;
+                const productPrice = parseFloat(productCard.querySelector('.price').textContent);
+                const productImg = productCard.querySelector('img').src;
+                const productDescription = productCard.querySelector('p').textContent;
+                
+                addToCart({
+                    name: productName,
+                    price: productPrice,
+                    img: productImg,
+                    description: productDescription,
+                    quantity: 1
+                });
+            }
+            
             function updateCartDisplay() {
-             
                 const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
                 cartCount.textContent = totalCount;                
                 if (cart.length === 0) {
