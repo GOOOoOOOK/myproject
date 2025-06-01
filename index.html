@@ -95,7 +95,7 @@
                 <div class="about-text">
                     <p>Наша семейная пасека находится в экологически чистом районе уже много лет. Мы с любовью ухаживаем за нашими пчёлами и следим за качеством мёда на всех этапах производства.</p>
                     <p>Мы не используем химические добавки и не нагреваем мёд, поэтому все полезные свойства сохраняются в полном объёме. Наш мёд регулярно проходит лабораторные проверки и имеет все необходимые сертификаты качества.</p>
-                    <p>Попробовав наш мёд однажды, вы станете нашим постоянным клиентом!</p>
+                    <p>Мы любим мёд, мёд любит нас!</p>
                 </div>
                 <div class="about-img">
                     <img src="https://images.unsplash.com/photo-1587049352851-8d4e89133924?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Наша пасека">
@@ -136,7 +136,7 @@
         </div>
     </footer>
     
-    <!-- Модальное окно корзины -->
+
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -150,7 +150,7 @@
         </div>
     </div>
 
-    <!-- Форма оформления заказа -->
+
     <div id="order-form-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -177,7 +177,7 @@
         </div>
     </div>
 
-    <!-- Иконка корзины с количеством товаров -->
+
     <div class="cart-icon" id="cart-icon">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count" id="cart-count">0</span>
@@ -185,10 +185,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Корзина
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            // Элементы DOM
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];            
             const cartModal = document.getElementById('cart-modal');
             const orderFormModal = document.getElementById('order-form-modal');
             const cartItemsContainer = document.getElementById('cart-items');
@@ -198,7 +195,6 @@
             const checkoutBtn = document.getElementById('checkout-btn');
             const orderForm = document.getElementById('order-form');
             
-            // Открытие/закрытие модальных окон
             const modalTriggers = {
                 'cart-icon': cartModal,
                 'checkout-btn': orderFormModal
@@ -226,8 +222,7 @@
                 if (e.target === cartModal) cartModal.style.display = 'none';
                 if (e.target === orderFormModal) orderFormModal.style.display = 'none';
             });
-            
-            // Добавление товара в корзину
+
             document.querySelectorAll('.add-to-cart').forEach(button => {
                 button.addEventListener('click', function() {
                     const productCard = this.closest('.product-card');
@@ -244,13 +239,10 @@
                 });
             });
             
-            // Обновление отображения корзины
             function updateCartDisplay() {
-                // Обновляем количество товаров
+             
                 const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.textContent = totalCount;
-                
-                // Обновляем содержимое корзины
+                cartCount.textContent = totalCount;                
                 if (cart.length === 0) {
                     cartItemsContainer.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
                     cartTotalPrice.textContent = '0';
@@ -283,7 +275,6 @@
                 
                 cartTotalPrice.textContent = totalPrice.toFixed(2);
                 
-                // Навешиваем обработчики на кнопки
                 document.querySelectorAll('.increase').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const index = this.closest('.cart-item-controls').querySelector('.remove-item').dataset.index;
@@ -316,7 +307,6 @@
                 });
             }
             
-            // Добавление товара в корзину
             function addToCart(product) {
                 const existingItem = cart.find(item => item.name === product.name);
                 
@@ -329,17 +319,14 @@
                 saveCart();
                 updateCartDisplay();
                 
-                // Анимация добавления
                 cartIcon.classList.add('animate');
                 setTimeout(() => cartIcon.classList.remove('animate'), 500);
             }
             
-            // Сохранение корзины в localStorage
             function saveCart() {
                 localStorage.setItem('cart', JSON.stringify(cart));
             }
             
-            // Оформление заказа
             orderForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -354,26 +341,20 @@
                     total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
                     date: new Date().toISOString()
                 };
-                
-                // Здесь должна быть отправка данных на сервер
+
                 console.log('Заказ оформлен:', order);
-                
-                // Очищаем корзину после оформления
+         
                 cart = [];
                 saveCart();
                 updateCartDisplay();
-                
-                // Закрываем модальное окно
+              
                 orderFormModal.style.display = 'none';
-                
-                // Очищаем форму
+             
                 this.reset();
-                
-                // Показываем сообщение об успехе
+         
                 alert('Заказ успешно оформлен! Спасибо за покупку!');
             });
             
-            // Плавная прокрутка
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -382,8 +363,7 @@
                     });
                 });
             });
-            
-            // Инициализация корзины
+
             updateCartDisplay();
         });
     </script>
