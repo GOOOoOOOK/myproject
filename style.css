@@ -276,7 +276,7 @@ footer {
 /* Стили для модальных окон */
 .modal {
     display: none;
-    position: fixed;
+    position: relative;
     z-index: 800;
     left: 0;
     top: 0;
